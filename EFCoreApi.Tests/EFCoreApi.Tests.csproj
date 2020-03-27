@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<LangVersion>8</LangVersion>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<IsPackable>false</IsPackable>
+		<GenerateLocReport>$(GenerateLocReport)</GenerateLocReport>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentAssertions" Version="5.9.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+		<PackageReference Include="NSubstitute" Version="4.2.1" />
+		<PackageReference Include="NUnit" Version="3.12.0" />
+		<PackageReference Include="NUnit.ConsoleRunner" Version="3.10.0" />
+		<PackageReference Include="NUnit.Runners" Version="3.10.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+		<PackageReference Include="AltCover" Version="6.5.739" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EFCoreApi\EFCoreApi.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Model" />
+		<Folder Include="Model\" />
+	</ItemGroup>
+
+	<Target Name="Calculate LOC" BeforeTargets="Build" Condition="'$(GenerateLocReport)' == 'true'">
+		<Exec Command="cloc --exclude-dir=bin,obj,node_modules,vendor,dist --xml --report-file=TestResults/cloc.xml .." />
+	</Target>
+
+</Project>
