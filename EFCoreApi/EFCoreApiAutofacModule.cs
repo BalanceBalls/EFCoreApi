@@ -15,12 +15,8 @@ namespace EFCoreApi
 			var assemblyNames = new[] { Assembly.GetAssembly(typeof(EFCoreApiAutofacModule)) };
 			
 			builder.RegisterAssemblyTypes(assemblyNames)
-				.Where(t => t.Name.EndsWith("Repository")).AsImplementedInterfaces().SingleInstance();
-			builder.RegisterAssemblyTypes(assemblyNames)
 				.Where(t => t.Name.EndsWith("Service") || t.Name.EndsWith("Helper")).AsImplementedInterfaces().AsSelf().SingleInstance();
-			builder.RegisterAssemblyTypes(assemblyNames)
-				.Where(t => t.Name.EndsWith("Factory")).AsImplementedInterfaces().AsSelf().SingleInstance().PropertiesAutowired();
-			
+
 			base.Load(builder);
 		}
 	}
