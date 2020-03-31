@@ -2,16 +2,21 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.IO;
 using System.Reflection;
+using EFCoreApi.Helpers;
+using EFCoreApi.Models.Repository;
+using Hangfire;
+using Hangfire.SqlServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Refit;
 
 namespace EFCoreApi
 {
@@ -20,20 +25,6 @@ namespace EFCoreApi
 	/// </summary>
 	public class Startup
 	{
-		#region Constants
-
-		/// <summary>
-		/// Название переменной окружения хранящей логин для подключения к БД.
-		/// </summary>
-		private const string DB_LOGIN = "DB_LOGIN";
-
-		/// <summary>
-		/// Название переменной окружения хранящей пароль для подключения к БД.
-		/// </summary>
-		private const string DB_PASSWORD = "DB_PASSWORD";
-
-		#endregion
-
 		/// <summary>
 		/// Интерфейс для работы с конфигурацией.
 		/// </summary>
@@ -49,8 +40,10 @@ namespace EFCoreApi
 		/// </summary>
 		public void ConfigureServices(IServiceCollection services)
 		{
+			var connectionString = _configuration.GetSection("ConnectionStrings")["DefaultConnection"];
 			services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-			
+			services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(connectionString));
+
 			services.AddSingleton<IMemoryCache, MemoryCache>();
 			services.AddSwaggerGen(c =>
 			{
@@ -59,6 +52,17 @@ namespace EFCoreApi
 				var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 				c.IncludeXmlComments(xmlPath);
 			});
+
+			services.AddHangfire(conf =>
+			{
+				var options = new SqlServerStorageOptions
+				{
+					PrepareSchemaIfNecessary = false,
+					QueuePollInterval = TimeSpan.FromMinutes(5)
+				};
+				conf.UseSqlServerStorage(connectionString, options);
+			});
+			services.AddScoped<IUpdateDataJob, UpdateDataJob>();
 
 			services.AddAuthorization();
 			services.AddHealthChecks();
@@ -90,14 +94,18 @@ namespace EFCoreApi
 			{
 				app.UseExceptionHandler("/error");
 			}
-			
-			SetConnectionString();
+
+			app.UseHangfireServer(new BackgroundJobServerOptions
+			{
+				WorkerCount = 1
+			});
 			
 			app.UseRouting();
 			app.UseHealthChecks("/health");
 			app.UseAuthentication();
 			app.UseAuthorization();
-
+			app.UseMiddleware<ExceptionHandlerMiddleware>();
+			
 			if (env.IsDevelopment())
 			{
 				// Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -110,22 +118,14 @@ namespace EFCoreApi
 					c.SwaggerEndpoint("/swagger/v1/swagger.json", "EFCoreApi V1");
 				});
 			}
-
+			
+			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute{ Attempts = 0 });
+			JobScheduler.ScheduleRecurringJobs();
+			
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
 			});
-		}
-
-		/// <summary>
-		/// Устанавливает строку соединения в БД.
-		/// </summary>
-		private void SetConnectionString()
-		{
-			var login = Environment.GetEnvironmentVariable(DB_LOGIN);
-			var password = Environment.GetEnvironmentVariable(DB_PASSWORD);
-
-			//HttpContextSqlConnectionService.ConnectionString = $"{_configuration.GetConnectionString("Default")} User Id={login};Password={password};";
 		}
 	}
 }
