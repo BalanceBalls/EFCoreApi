@@ -9,12 +9,14 @@ using System;
 using System.IO;
 using System.Reflection;
 using EFCoreApi.Helpers;
+using EFCoreApi.Models.Repository;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Refit;
 
 namespace EFCoreApi
 {
@@ -61,7 +63,7 @@ namespace EFCoreApi
 				conf.UseSqlServerStorage(connectionString, options);
 			});
 			services.AddScoped<IUpdateDataJob, UpdateDataJob>();
-			
+
 			services.AddAuthorization();
 			services.AddHealthChecks();
 			services.AddControllers();

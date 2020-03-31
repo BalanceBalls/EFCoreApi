@@ -1,25 +1,17 @@
-﻿using System;
-
-namespace EFCoreApi.Models.Exception
+﻿namespace EFCoreApi.Models.Exception
 {
-	public class DataBaseException : System.Exception
+	public class DataBaseException : BaseException
 	{
 		/// <summary>
 		/// Текст исключения.
 		/// </summary>
-		private readonly string _errorMessage = @"Ошибка при взаимодействии с БД.";
+		private const string ErrorMessage = "Ошибка при взаимодействии с БД.";
 
-		/// <summary>
-		/// Свойство исключения.
-		/// </summary>
-		public override string Message { get; }
-		
 		/// <summary>
 		/// Конструктор по типу исключения и тексту ошибки.
 		/// </summary>
-		public DataBaseException(string errorDescription)
+		public DataBaseException(string errorDescription) : base(ErrorMessage, errorDescription)
 		{
-			Message = $"{_errorMessage}.{Environment.NewLine} Причина : {errorDescription}";
 		}
 	}
 }

@@ -58,7 +58,7 @@ namespace EFCoreApi.Controllers
 		/// <param name="data">Информация о валютной паре.</param>
 		/// <returns>Идентификатор созданной записи.</returns>
 		[HttpPost]
-		public Task<long> AddPairData(PairData data)
+		public Task<long> AddPairData(CreateOrUpdateCurrencyData data)
 		{
 			return _bittrexService.AddPairDataAsync(data);
 		}
@@ -80,7 +80,7 @@ namespace EFCoreApi.Controllers
 		/// <param name="data">Информация о валютной паре.</param>
 		/// <returns>Обновленная информация о валютной паре.</returns>
 		[HttpPost]
-		public Task<PairData> UpdatedPairById(long id, UpdateCurrencyData data)
+		public Task<PairData> UpdatedPairById(long id, CreateOrUpdateCurrencyData data)
 		{
 			return _bittrexService.UpdatedPairByIdAsync(id, data);
 		}

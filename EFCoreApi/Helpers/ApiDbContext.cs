@@ -10,9 +10,7 @@ namespace EFCoreApi.Helpers
 	{
 		public ApiDbContext(DbContextOptions dbContextOptions)
 			: base(dbContextOptions)
-		{
-			
-		}
+		{ }
 
 		public DbSet<PairData> Pairs { get; set; } = default!;
 	}

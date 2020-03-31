@@ -1,28 +1,20 @@
-﻿using System;
-
-namespace EFCoreApi.Models.Exception
+﻿namespace EFCoreApi.Models.Exception
 {
 	/// <summary>
 	/// Исключение при обращении к API.
 	/// </summary>
-	public class BittrexException : System.Exception
+	public class BittrexException : BaseException
 	{
 		/// <summary>
 		/// Текст исключения.
 		/// </summary>
-		private readonly string _errorMessage = @"Ошибка при получении данных с Bittrex API.";
-
-		/// <summary>
-		/// Свойство исключения.
-		/// </summary>
-		public override string Message { get; }
+		private const string ErrorMessage = "Ошибка при получении данных с Bittrex API.";
 
 		/// <summary>
 		/// Конструктор по типу исключения и тексту ошибки.
 		/// </summary>
-		public BittrexException(string errorDescription)
+		public BittrexException(string errorDescription) : base(ErrorMessage, errorDescription)
 		{
-			Message = $"{_errorMessage}.{Environment.NewLine} Причина : {errorDescription}";
 		}
 	}
 }

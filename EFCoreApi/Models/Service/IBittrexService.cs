@@ -44,7 +44,7 @@ namespace EFCoreApi.Models.Service
 		/// </summary>
 		/// <param name="data">Информация о валютной паре.</param>
 		/// <returns>Идентификатор созданной записи.</returns>
-		Task<long> AddPairDataAsync(PairData data);
+		Task<long> AddPairDataAsync(CreateOrUpdateCurrencyData data);
 
 		/// <summary>
 		/// Получает всю информацию о валютных парах из БД.
@@ -58,7 +58,7 @@ namespace EFCoreApi.Models.Service
 		/// <param name="id">Идентификатор записи.</param>
 		/// <param name="data">Информация о валютной паре.</param>
 		/// <returns>Обновленная информация о валютной паре.</returns>
-		Task<PairData> UpdatedPairByIdAsync(long id, UpdateCurrencyData data);
+		Task<PairData> UpdatedPairByIdAsync(long id, CreateOrUpdateCurrencyData data);
 
 		/// <summary>
 		/// Удаляет информацию о валютной паре.

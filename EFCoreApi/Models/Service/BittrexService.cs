@@ -21,7 +21,7 @@ namespace EFCoreApi.Models.Service
 		/// Контекст подключения к БД.
 		/// </summary>
 		private readonly ApiDbContext _apiDbContext;
-		
+
 		/// <summary>
 		/// Адрес API.
 		/// </summary>
@@ -110,12 +110,24 @@ namespace EFCoreApi.Models.Service
 		/// </summary>
 		/// <param name="data">Информация о валютной паре.</param>
 		/// <returns>Идентификатор созданной записи.</returns>
-		public async Task<long> AddPairDataAsync(PairData data)
+		public async Task<long> AddPairDataAsync(CreateOrUpdateCurrencyData data)
 		{
-			await _apiDbContext.Pairs.AddAsync(data);
+			var pairToAdd = new PairData
+			{
+				PairName = data.PairName,
+				BuyPrice = data.BuyPrice,
+				SellPrice = data.SellPrice,
+				LastTradePrice = data.LastTradePrice,
+				HighPrice = data.HighPrice,
+				LowPrice = data.LowPrice,
+				Volume = data.Volume,
+				Updated = data.Updated
+ 			};
+			
+			await _apiDbContext.Pairs.AddAsync(pairToAdd);
 			await _apiDbContext.SaveChangesAsync();
 
-			return data.PairId;
+			return pairToAdd.PairId;
 		}
 
 		/// <summary>
@@ -133,7 +145,7 @@ namespace EFCoreApi.Models.Service
 		/// <param name="id">Идентификатор записи.</param>
 		/// <param name="data">Информация о валютной паре.</param>
 		/// <returns>Обновленная информация о валютной паре.</returns>
-		public async Task<PairData> UpdatedPairByIdAsync(long id, UpdateCurrencyData data)
+		public async Task<PairData> UpdatedPairByIdAsync(long id, CreateOrUpdateCurrencyData data)
 		{
 			var pairToModify = await _apiDbContext.Pairs.SingleOrDefaultAsync(x => x.PairId == id);
 			

@@ -2,7 +2,7 @@
 
 namespace EFCoreApi.Models.DataModel
 {
-	public class UpdateCurrencyData
+	public class CreateOrUpdateCurrencyData
 	{
 		public string? PairName { get; set; }
 

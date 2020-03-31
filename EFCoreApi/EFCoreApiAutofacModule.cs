@@ -13,7 +13,7 @@ namespace EFCoreApi
 		protected override void Load(ContainerBuilder builder)
 		{
 			var assemblyNames = new[] { Assembly.GetAssembly(typeof(EFCoreApiAutofacModule)) };
-			
+
 			builder.RegisterAssemblyTypes(assemblyNames)
 				.Where(t => t.Name.EndsWith("Service") || t.Name.EndsWith("Helper")).AsImplementedInterfaces().AsSelf().SingleInstance();
 
